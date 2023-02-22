@@ -7,11 +7,14 @@ import {
 	HttpCode,
 	Body,
 	Param,
-	NotFoundException,
 } from '@nestjs/common';
+import { Query, UseGuards } from '@nestjs/common/decorators';
+
 import { CreateProductDTO } from './dto/product.dto';
 import { ProductService } from './product.service';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('product')
 export class ProductController {
 	constructor(private productService: ProductService) {}
@@ -37,9 +40,11 @@ export class ProductController {
 	}
 
 	@Get()
-	async getProducts() {
+	async getProducts(@Query() query) {
 		try {
-			const products = await this.productService.getProducts();
+			const products = await this.productService.getProducts(
+				query.gender,
+			);
 
 			return {
 				success: true,
@@ -58,8 +63,6 @@ export class ProductController {
 		try {
 			const product = await this.productService.getProduct(productId);
 
-			if (!product) throw new NotFoundException("Product doesn't exist");
-
 			return {
 				success: true,
 				data: product,
@@ -76,8 +79,6 @@ export class ProductController {
 	async deleteProduct(@Param('productId') productId) {
 		try {
 			const product = await this.productService.deleteProduct(productId);
-
-			if (!product) throw new NotFoundException("Product doesn't exist");
 
 			return {
 				success: true,
@@ -102,12 +103,43 @@ export class ProductController {
 				createProductDTO,
 			);
 
-			if (!updatedProduct)
-				throw new NotFoundException("Product doesn't exist");
-
 			return {
 				success: true,
 				data: updatedProduct,
+			};
+		} catch (error) {
+			return {
+				success: false,
+				message: error.message,
+			};
+		}
+	}
+
+	@Get('/:slug')
+	async getProductBySlug(@Param('slug') slug) {
+		try {
+			const product = await this.productService.getProductBySlug(slug);
+
+			return {
+				success: true,
+				data: product,
+			};
+		} catch (error) {
+			return {
+				success: false,
+				message: error.message,
+			};
+		}
+	}
+
+	@Get('search/:q')
+	async searchProducts(@Param('q') query) {
+		try {
+			const products = await this.productService.searchProducts(query);
+
+			return {
+				success: true,
+				data: products,
 			};
 		} catch (error) {
 			return {

@@ -1,7 +1,21 @@
+import { IGender } from '../enums/gender.enum';
+import { ISize } from '../enums/size.enum';
+import { IType } from '../enums/type.enum';
+
 export interface IProduct {
-	readonly name: string;
+	readonly _id: string;
 	readonly description: string;
-	readonly imageURL: string;
+	readonly images: string[];
+	readonly inStock: number;
 	readonly price: number;
+	readonly sizes: ISize[];
+	readonly slug: string;
+	readonly tags: string[];
+	readonly title: string;
+	readonly type: IType;
+	readonly gender: IGender;
+
+	// TODO: agregar createdAt y updatedAt
 	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }

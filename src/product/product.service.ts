@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { IProduct } from './interfaces/product.interface';
 import { CreateProductDTO } from './dto/product.dto';
 import { Product } from './schemas/product.schema';
+import { IGender } from './enums/gender.enum';
+import { initialData } from '../database/seed-data';
 
 @Injectable()
 export class ProductService {
@@ -13,13 +15,33 @@ export class ProductService {
 		private readonly productModel: Model<IProduct>,
 	) {}
 
-	async getProducts(): Promise<IProduct[]> {
-		const products = await this.productModel.find();
+	async getProducts(gender?: string): Promise<IProduct[]> {
+		let condition = {};
+
+		if (gender && IGender[gender]) {
+			condition = { gender };
+		}
+
+		const products = await this.productModel
+			.find(condition)
+			.select('title images price inStock slug -_id')
+			.lean();
 		return products;
 	}
 
 	async getProduct(productId: string): Promise<Product> {
-		const product = await this.productModel.findById(productId);
+		const product = await this.productModel.findById(productId).lean();
+
+		if (!product) throw new NotFoundException("Product doesn't exist");
+
+		return product;
+	}
+
+	async getProductBySlug(slug: string): Promise<Product> {
+		const product = await this.productModel.findOne({ slug }).lean();
+
+		if (!product) throw new NotFoundException("Product doesn't exist");
+
 		return product;
 	}
 
@@ -30,9 +52,12 @@ export class ProductService {
 	}
 
 	async deleteProduct(productId: string): Promise<Product> {
-		const deletedProduct = await this.productModel.findByIdAndDelete(
-			productId,
-		);
+		const deletedProduct = await this.productModel
+			.findByIdAndDelete(productId)
+			.lean();
+
+		if (!deletedProduct)
+			throw new NotFoundException("Product doesn't exist");
 
 		return deletedProduct;
 	}
@@ -41,12 +66,32 @@ export class ProductService {
 		productId: string,
 		createProductDTO: CreateProductDTO,
 	): Promise<Product> {
-		const updatedProduct = await this.productModel.findByIdAndUpdate(
-			productId,
-			createProductDTO,
-			{ new: true },
-		);
+		const updatedProduct = await this.productModel
+			.findByIdAndUpdate(productId, createProductDTO, { new: true })
+			.lean();
+
+		if (!updatedProduct)
+			throw new NotFoundException("Product doesn't exist");
 
 		return updatedProduct;
+	}
+
+	async searchProducts(query?: string): Promise<IProduct[]> {
+		if (!query) {
+			throw new Error('Please provide a query');
+		}
+
+		const products = await this.productModel
+			.find({
+				$text: { $search: query },
+			})
+			.select('title images price inStock slug -_id')
+			.lean();
+		return products;
+	}
+
+	async seedProducts() {
+		await this.productModel.deleteMany();
+		await this.productModel.insertMany(initialData.products);
 	}
 }
