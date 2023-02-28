@@ -13,7 +13,7 @@ import { OrderModule } from './order/order.module';
 	imports: [
 		ConfigModule.forRoot(),
 		ProductModule,
-		MongooseModule.forRoot('mongodb://localhost:27017/products-nest'),
+		MongooseModule.forRoot(process.env.DATABASE_URL),
 		UserModule,
 		AuthModule,
 		OrderModule,
