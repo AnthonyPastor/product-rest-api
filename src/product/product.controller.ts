@@ -7,20 +7,21 @@ import {
 	HttpCode,
 	Body,
 	Param,
+	Query,
+	UseGuards,
 } from '@nestjs/common';
-import { Query, UseGuards } from '@nestjs/common/decorators';
 
 import { CreateProductDTO } from './dto/product.dto';
 import { ProductService } from './product.service';
 import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('product')
 export class ProductController {
 	constructor(private productService: ProductService) {}
 
 	@Post()
 	@HttpCode(201)
+	@UseGuards(JwtAuthGuard)
 	async create(@Body() createProductDTO: CreateProductDTO) {
 		try {
 			const createdProduct = await this.productService.createProduct(
@@ -58,7 +59,7 @@ export class ProductController {
 		}
 	}
 
-	@Get('/:productId')
+	@Get('/id/:productId')
 	async getProductById(@Param('productId') productId) {
 		try {
 			const product = await this.productService.getProduct(productId);
@@ -76,6 +77,7 @@ export class ProductController {
 	}
 
 	@Delete('/:productId')
+	@UseGuards(JwtAuthGuard)
 	async deleteProduct(@Param('productId') productId) {
 		try {
 			const product = await this.productService.deleteProduct(productId);
@@ -93,6 +95,7 @@ export class ProductController {
 	}
 
 	@Put('/:productId')
+	@UseGuards(JwtAuthGuard)
 	async updateProduct(
 		@Param('productId') productId,
 		@Body() createProductDTO: CreateProductDTO,
@@ -115,7 +118,7 @@ export class ProductController {
 		}
 	}
 
-	@Get('/:slug')
+	@Get('/slug/:slug')
 	async getProductBySlug(@Param('slug') slug) {
 		try {
 			const product = await this.productService.getProductBySlug(slug);

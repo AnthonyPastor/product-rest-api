@@ -29,7 +29,7 @@ export class ProductService {
 		return products;
 	}
 
-	async getProduct(productId: string): Promise<Product> {
+	async getProduct(productId: string): Promise<IProduct> {
 		const product = await this.productModel.findById(productId).lean();
 
 		if (!product) throw new NotFoundException("Product doesn't exist");
@@ -37,7 +37,7 @@ export class ProductService {
 		return product;
 	}
 
-	async getProductBySlug(slug: string): Promise<Product> {
+	async getProductBySlug(slug: string): Promise<IProduct> {
 		const product = await this.productModel.findOne({ slug }).lean();
 
 		if (!product) throw new NotFoundException("Product doesn't exist");
@@ -45,13 +45,13 @@ export class ProductService {
 		return product;
 	}
 
-	async createProduct(createProductDTO: CreateProductDTO): Promise<Product> {
+	async createProduct(createProductDTO: CreateProductDTO): Promise<IProduct> {
 		const createdProduct = await this.productModel.create(createProductDTO);
 
 		return createdProduct;
 	}
 
-	async deleteProduct(productId: string): Promise<Product> {
+	async deleteProduct(productId: string): Promise<IProduct> {
 		const deletedProduct = await this.productModel
 			.findByIdAndDelete(productId)
 			.lean();
@@ -65,7 +65,7 @@ export class ProductService {
 	async updateProduct(
 		productId: string,
 		createProductDTO: CreateProductDTO,
-	): Promise<Product> {
+	): Promise<IProduct> {
 		const updatedProduct = await this.productModel
 			.findByIdAndUpdate(productId, createProductDTO, { new: true })
 			.lean();
