@@ -56,5 +56,11 @@ export class AuthService {
 
 		return user;
 	}
+
+	async validarToken(token: string): Promise<void> {
+		await this.jwtService.verify(token, {
+			secret: process.env.TOKEN_SECRET,
+		});
+	}
 }
 

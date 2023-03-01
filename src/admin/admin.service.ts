@@ -108,7 +108,7 @@ export class AdminService {
 				images: product.images.map((image) => {
 					return image.includes('http')
 						? image
-						: `${process.env.HOST_NAME}products/${image}`;
+						: `${process.env.FRONTEND_URL}/products/${image}`;
 				}),
 			};
 		});
