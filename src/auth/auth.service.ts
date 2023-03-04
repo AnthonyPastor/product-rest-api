@@ -57,10 +57,17 @@ export class AuthService {
 		return user;
 	}
 
-	async validarToken(token: string): Promise<void> {
+	async validarToken(token: string): Promise<{ user: IUser; token: string }> {
 		await this.jwtService.verify(token, {
 			secret: process.env.TOKEN_SECRET,
 		});
+		const data = await this.jwtService.decode(token);
+
+		if (typeof data !== 'string') {
+			const user = await this.usersService.getUserById(data.id || '');
+
+			return { user, token };
+		}
 	}
 }
 

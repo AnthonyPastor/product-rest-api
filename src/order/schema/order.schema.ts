@@ -6,22 +6,24 @@ import { User } from '../../user/schema/user.schema';
 @Schema({ timestamps: true })
 export class Order {
 	@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-	title: User;
+	user: User;
 
 	@Prop(
-		raw({
-			_id: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Product',
-				required: true,
+		raw([
+			{
+				_id: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: 'Product',
+					required: true,
+				},
+				title: { type: String, required: true },
+				size: { type: String, required: true },
+				quantity: { type: Number, required: true },
+				slug: { type: String, required: true },
+				image: { type: String, required: true },
+				price: { type: Number, required: true },
 			},
-			title: { type: String, required: true },
-			size: { type: String, required: true },
-			quantity: { type: Number, required: true },
-			slug: { type: String, required: true },
-			image: { type: String, required: true },
-			price: { type: Number, required: true },
-		}),
+		]),
 	)
 	orderItems: Record<string, any>;
 
@@ -52,7 +54,7 @@ export class Order {
 	total: number;
 
 	@Prop()
-	isPaid: string;
+	isPaid: boolean;
 
 	@Prop()
 	transactionId: string;

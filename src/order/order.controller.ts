@@ -40,7 +40,7 @@ export class OrderController {
 		}
 	}
 
-	@Get('/:productId')
+	@Get('/id/:orderId')
 	async getOrderById(@Param('orderId') orderId) {
 		try {
 			const order = await this.orderService.getOrderById(orderId);
@@ -57,7 +57,7 @@ export class OrderController {
 		}
 	}
 
-	@Get('/:userId')
+	@Get('/user/:userId')
 	async getOrderByUser(@Param('userId') userId) {
 		try {
 			const orders = await this.orderService.getOrdersByUser(userId);
@@ -89,6 +89,18 @@ export class OrderController {
 				success: true,
 				data: updatedOrder,
 			};
+		} catch (error) {
+			return {
+				success: false,
+				message: error.message,
+			};
+		}
+	}
+
+	@Post('/pay')
+	async payOrder(@Body() body) {
+		try {
+			return await this.orderService.fakePay(body.orderId);
 		} catch (error) {
 			return {
 				success: false,

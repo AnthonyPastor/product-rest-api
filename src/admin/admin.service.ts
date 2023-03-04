@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
-import { v2 as cloudinary } from 'cloudinary';
-import formidable from 'formidable';
+import {
+	UploadApiErrorResponse,
+	UploadApiResponse,
+	v2 as cloudinary,
+} from 'cloudinary';
+import { Readable } from 'stream';
 
 import { Product } from '../product/schemas/product.schema';
 import { IProduct } from '../product/interfaces/product.interface';
@@ -12,7 +16,6 @@ import { User } from '../user/schema/user.schema';
 import { IUser } from '../user/interfaces/user.interface';
 import { DashboardData } from './interfaces/admin.interface';
 import { CreateProductDTO } from '../product/dto/product.dto';
-import { Request } from 'express';
 
 cloudinary.config(process.env.CLOUDINARY_URL || '');
 
@@ -164,31 +167,23 @@ export class AdminService {
 		return product;
 	}
 
-	async saveFile(file: formidable.File): Promise<string> {
-		const { secure_url } = await cloudinary.uploader.upload(file.filepath);
-		return secure_url;
-	}
-
-	async parseFiles(req: Request): Promise<string> {
+	async saveFile(
+		file: Express.Multer.File,
+	): Promise<UploadApiResponse | UploadApiErrorResponse> {
 		return new Promise((resolve, reject) => {
-			const form = new formidable.IncomingForm();
-
-			form.parse(req, async (err, fields, files) => {
-				if (err) return reject(err);
-
-				const filePath = await this.saveFile(
-					files.file as formidable.File,
-				);
-
-				resolve(filePath);
-			});
+			const upload = cloudinary.uploader.upload_stream(
+				(error, result) => {
+					if (error) return reject(error);
+					resolve(result);
+				},
+			);
+			Readable.from(file.buffer).pipe(upload);
 		});
 	}
 
-	async uploadFile(req: Request): Promise<string> {
-		const imageUrl = await this.parseFiles(req);
-
-		return imageUrl;
+	async uploadFile(file: Express.Multer.File): Promise<string> {
+		const response = await this.saveFile(file);
+		return response.secure_url;
 	}
 }
 

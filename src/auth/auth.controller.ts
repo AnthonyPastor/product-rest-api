@@ -27,7 +27,7 @@ export class AuthController {
 		return this.authService.login(req.user);
 	}
 
-	@Get('/validar-token')
+	@Post('/validate-token')
 	async validateToken(@Body() body) {
 		return this.authService.validarToken(body.token);
 	}

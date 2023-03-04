@@ -26,7 +26,14 @@ export class ProductService {
 			.find(condition)
 			.select('title images price inStock slug -_id')
 			.lean();
-		return products;
+		return products.map((product) => ({
+			...product,
+			images: product.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		}));
 	}
 
 	async getProduct(productId: string): Promise<IProduct> {
@@ -34,7 +41,14 @@ export class ProductService {
 
 		if (!product) throw new NotFoundException("Product doesn't exist");
 
-		return product;
+		return {
+			...product,
+			images: product.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		};
 	}
 
 	async getProductBySlug(slug: string): Promise<IProduct> {
@@ -42,13 +56,27 @@ export class ProductService {
 
 		if (!product) throw new NotFoundException("Product doesn't exist");
 
-		return product;
+		return {
+			...product,
+			images: product.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		};
 	}
 
 	async createProduct(createProductDTO: CreateProductDTO): Promise<IProduct> {
 		const createdProduct = await this.productModel.create(createProductDTO);
 
-		return createdProduct;
+		return {
+			...createdProduct,
+			images: createdProduct.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		};
 	}
 
 	async deleteProduct(productId: string): Promise<IProduct> {
@@ -73,7 +101,14 @@ export class ProductService {
 		if (!updatedProduct)
 			throw new NotFoundException("Product doesn't exist");
 
-		return updatedProduct;
+		return {
+			...updatedProduct,
+			images: updatedProduct.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		};
 	}
 
 	async searchProducts(query?: string): Promise<IProduct[]> {
@@ -87,7 +122,15 @@ export class ProductService {
 			})
 			.select('title images price inStock slug -_id')
 			.lean();
-		return products;
+
+		return products.map((product) => ({
+			...product,
+			images: product.images.map((image) => {
+				return image.includes('http')
+					? image
+					: `${process.env.FRONTEND_URL}/products/${image}`;
+			}),
+		}));
 	}
 
 	async seedProducts() {

@@ -1,7 +1,17 @@
-import { Body, Controller, Get, Post, Put, Request } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Post,
+	Put,
+	Request,
+	UploadedFile,
+	UseInterceptors,
+} from '@nestjs/common';
 
 import { AdminService } from './admin.service';
 import { CreateProductDTO } from '../product/dto/product.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
@@ -70,7 +80,6 @@ export class AdminController {
 				data: response,
 			};
 		} catch (error) {
-			console.log(error);
 			return {
 				success: false,
 				message: error.message,
@@ -79,10 +88,10 @@ export class AdminController {
 	}
 
 	@Put('/products')
-	async updateProduct(@Body() createProductDTO: CreateProductDTO) {
+	async updateProduct(@Body() updateProductDTO: CreateProductDTO) {
 		try {
 			const response = await this.adminService.updateProduct(
-				createProductDTO,
+				updateProductDTO,
 			);
 
 			return {
@@ -98,15 +107,17 @@ export class AdminController {
 	}
 
 	@Post('/upload')
-	async uploadFile(@Request() req) {
+	@UseInterceptors(FileInterceptor('file'))
+	async uploadFile(@UploadedFile() file: Express.Multer.File) {
 		try {
-			const response = await this.adminService.uploadFile(req);
+			const response = await this.adminService.uploadFile(file);
 
 			return {
 				success: true,
 				data: response,
 			};
 		} catch (error) {
+			console.error(error);
 			return {
 				success: false,
 				message: error.message,

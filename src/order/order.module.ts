@@ -6,9 +6,13 @@ import { ProductModule } from '../product/product.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schema/order.schema';
 import { AuthModule } from '../auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
 	imports: [
+		ConfigModule.forRoot(),
+		HttpModule,
 		UserModule,
 		ProductModule,
 		AuthModule,

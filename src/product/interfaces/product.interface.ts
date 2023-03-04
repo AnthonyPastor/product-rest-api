@@ -15,7 +15,6 @@ export interface IProduct {
 	readonly type: IType;
 	readonly gender: IGender;
 
-	// TODO: agregar createdAt y updatedAt
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }
