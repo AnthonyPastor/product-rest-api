@@ -29,7 +29,7 @@ export class ProductService {
 		return products.map((product) => ({
 			...product,
 			images: product.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
@@ -44,7 +44,7 @@ export class ProductService {
 		return {
 			...product,
 			images: product.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
@@ -59,7 +59,7 @@ export class ProductService {
 		return {
 			...product,
 			images: product.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
@@ -72,7 +72,7 @@ export class ProductService {
 		return {
 			...createdProduct,
 			images: createdProduct.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
@@ -104,7 +104,7 @@ export class ProductService {
 		return {
 			...updatedProduct,
 			images: updatedProduct.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
@@ -126,7 +126,7 @@ export class ProductService {
 		return products.map((product) => ({
 			...product,
 			images: product.images.map((image) => {
-				return image.includes('http')
+				return image.includes('https')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
