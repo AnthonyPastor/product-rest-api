@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+	Controller,
+	Post,
+	Body,
+	UseGuards,
+	Request,
+	Get,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { RegisterUserDTO } from '../user/dto/register-user.dto';
@@ -19,5 +26,9 @@ export class AuthController {
 	async login(@Request() req) {
 		return this.authService.login(req.user);
 	}
-}
 
+	@Post('/validate-token')
+	async validateToken(@Body() body) {
+		return this.authService.validarToken(body.token);
+	}
+}

@@ -36,7 +36,6 @@ export class UserService {
 	}
 
 	async createUser(createUserDTO: RegisterUserDTO): Promise<IUser> {
-		console.log({ createUserDTO });
 		const savedPassword = bcrypt.hashSync(createUserDTO.password, 10);
 
 		const user = await this.userModel.create({
