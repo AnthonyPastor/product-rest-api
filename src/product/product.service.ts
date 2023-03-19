@@ -126,7 +126,7 @@ export class ProductService {
 		return products.map((product) => ({
 			...product,
 			images: product.images.map((image) => {
-				return image.includes('https')
+				return image.includes('cloudinary')
 					? image
 					: `${process.env.FRONTEND_URL}/products/${image}`;
 			}),
